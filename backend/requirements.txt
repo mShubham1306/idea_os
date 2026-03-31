@@ -1,0 +1,13 @@
+flask
+flask-cors
+flask_sqlalchemy
+python-dotenv
+langdetect
+openai
+bcrypt
+pyjwt
+pymysql
+cryptography
+werkzeug
+pandas
+gunicorn

@@ -1,0 +1,14 @@
+{
+  "venvPath": "backend",
+  "venv": "venv",
+  "pythonVersion": "3.12",
+  "extraPaths": ["."],
+  "reportMissingImports": "warning",
+  "reportGeneralTypeIssues": "warning",
+  "reportArgumentType": "warning",
+  "reportCallIssue": "warning",
+  "reportIndexIssue": "warning",
+  "reportOperatorIssue": "warning",
+  "reportAttributeAccessIssue": "warning",
+  "typeCheckingMode": "basic"
+}
