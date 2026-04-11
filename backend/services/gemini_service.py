@@ -3,69 +3,62 @@ import json
 import re
 
 try:
-    from openai import OpenAI
+    import google.generativeai as genai
 except ImportError:
-    OpenAI = None
+    genai = None
 
-
-class OpenAIService:
+class GeminiService:
     def __init__(self, api_key=None):
-        self.api_key = api_key or os.environ.get('OPENAI_API_KEY', '')
-        self.client = None
-        if self.api_key and OpenAI:
-            self.client = OpenAI(api_key=self.api_key)
+        self.api_key = api_key or os.environ.get('GEMINI_API_KEY') or os.environ.get('OPENAI_API_KEY', '')
+        self.client_configured = False
+        if self.api_key and genai:
+            genai.configure(api_key=self.api_key)
+            self.client_configured = True
 
     def generate_expansion(self, idea_text, prompt=None):
-        """Expand a business idea using GPT. Falls back to a heuristic if no key."""
-        if not self.client:
+        """Expand a business idea using Gemini. Falls back to a heuristic if no key."""
+        if not self.client_configured:
             return self._fallback_expansion(idea_text)
         try:
-            response = self.client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {"role": "system", "content": (
-                        "You are an expert startup advisor. Analyze the business idea and provide: "
-                        "1) A brief market analysis, 2) Key strengths, 3) Potential risks, "
-                        "4) Recommended next steps. Be concise and data-driven. "
-                        "If the idea is vague, still provide useful analysis by inferring "
-                        "the most likely intent and suggesting how to develop it further."
-                    )},
-                    {"role": "user", "content": f"Analyze this startup idea: {idea_text}"},
-                ],
-                max_tokens=500,
-                temperature=0.7,
+            model = genai.GenerativeModel(
+                "gemini-1.5-flash",
+                system_instruction=(
+                    "You are an expert startup advisor. Analyze the business idea and provide: "
+                    "1) A brief market analysis, 2) Key strengths, 3) Potential risks, "
+                    "4) Recommended next steps. Be concise and data-driven. "
+                    "If the idea is vague, still provide useful analysis by inferring "
+                    "the most likely intent and suggesting how to develop it further."
+                )
             )
-            return response.choices[0].message.content.strip()
+            response = model.generate_content(f"Analyze this startup idea: {idea_text}")
+            return response.text.strip()
         except Exception as e:
             return self._fallback_expansion(idea_text)
 
     def generate_detailed_analysis(self, idea_text):
-        """Return structured JSON analysis for the idea."""
-        if not self.client:
+        """Return structured JSON analysis for the idea using Gemini."""
+        if not self.client_configured:
             return self._fallback_detailed(idea_text)
         try:
-            response = self.client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {"role": "system", "content": (
-                        "You are an expert startup evaluator. Return ONLY valid JSON with these keys: "
-                        "innovation (0-100), market_demand (0-100), scalability (0-100), "
-                        "risk_level (Low/Medium/High), competitive_advantage (text), "
-                        "target_audience (text), monetization (text), "
-                        "strengths (array of strings), weaknesses (array of strings), "
-                        "recommendations (array of strings), "
-                        "summary (a 2-3 sentence executive summary of the idea's potential), "
-                        "refined_idea (if the idea is vague, suggest a clearer, more detailed version; otherwise repeat the original), "
-                        "idea_clarity (Low/Medium/High — how clear and well-defined the idea is). "
-                        "No markdown, no explanation — just the JSON object. "
-                        "Even if the idea is vague or short, provide your best analysis."
-                    )},
-                    {"role": "user", "content": f"Evaluate: {idea_text}"},
-                ],
-                max_tokens=800,
-                temperature=0.5,
+            model = genai.GenerativeModel(
+                "gemini-1.5-flash",
+                system_instruction=(
+                    "You are an expert startup evaluator. Return ONLY valid JSON with these keys: "
+                    "innovation (0-100 integer), market_demand (0-100 integer), scalability (0-100 integer), "
+                    "risk_level (Low/Medium/High string), competitive_advantage (string), "
+                    "target_audience (string), monetization (string), "
+                    "strengths (array of strings), weaknesses (array of strings), "
+                    "recommendations (array of strings), "
+                    "summary (a 2-3 sentence executive summary of the idea's potential), "
+                    "refined_idea (if the idea is vague, suggest a clearer, more detailed version; otherwise repeat the original), "
+                    "idea_clarity (Low/Medium/High — how clear and well-defined the idea is). "
+                    "No markdown, no explanation — just the JSON object. "
+                    "Even if the idea is vague or short, provide your best analysis."
+                ),
+                generation_config={"response_mime_type": "application/json"}
             )
-            raw = response.choices[0].message.content.strip()
+            response = model.generate_content(f"Evaluate: {idea_text}")
+            raw = response.text.strip()
             if raw.startswith("```"):
                 raw = raw.split("\n", 1)[-1].rsplit("```", 1)[0]
             return json.loads(raw)
@@ -74,24 +67,21 @@ class OpenAIService:
 
     def generate_summary(self, idea_text, score, idea_quality, detected_sector, detailed):
         """Generate an executive summary combining all analysis data."""
-        if self.client:
+        if self.client_configured:
             try:
-                response = self.client.chat.completions.create(
-                    model="gpt-4o-mini",
-                    messages=[
-                        {"role": "system", "content": (
-                            "Write a 2-3 sentence executive summary of this startup idea analysis. "
-                            "Be professional and constructive. Mention the overall score, sector, and key insight."
-                        )},
-                        {"role": "user", "content": (
-                            f"Idea: {idea_text}\nScore: {score}/10\n"
-                            f"Sector: {detected_sector}\nQuality: {idea_quality}"
-                        )},
-                    ],
-                    max_tokens=150,
-                    temperature=0.6,
+                model = genai.GenerativeModel(
+                    "gemini-1.5-flash",
+                    system_instruction=(
+                        "Write a 2-3 sentence executive summary of this startup idea analysis. "
+                        "Be professional and constructive. Mention the overall score, sector, and key insight."
+                    )
                 )
-                return response.choices[0].message.content.strip()
+                prompt_text = (
+                    f"Idea: {idea_text}\nScore: {score}/10\n"
+                    f"Sector: {detected_sector}\nQuality: {idea_quality}"
+                )
+                response = model.generate_content(prompt_text)
+                return response.text.strip()
             except Exception:
                 pass
         return self._fallback_summary(idea_text, score, idea_quality, detected_sector, detailed)
@@ -188,13 +178,9 @@ class OpenAIService:
         words = idea_text.lower().split()
         word_count = len(words)
 
-        # Detect hints from the idea text for more context-aware analysis
-        tech_words = {'ai', 'ml', 'blockchain', 'iot', 'automation', 'algorithm', 'smart', 'neural', 'data'}
-        market_words = {'market', 'customer', 'revenue', 'growth', 'scale', 'platform', 'saas', 'b2b', 'subscription'}
-        has_tech = bool(set(words) & tech_words)
-        has_market = bool(set(words) & market_words)
+        has_tech = bool(set(words) & {'ai', 'ml', 'blockchain', 'iot', 'automation', 'algorithm', 'smart', 'neural', 'data'})
+        has_market = bool(set(words) & {'market', 'customer', 'revenue', 'growth', 'scale', 'platform', 'saas', 'b2b', 'subscription'})
 
-        # Base scores adjusted by idea quality
         base_inn = 40 if word_count < 10 else 55
         base_demand = 35 if word_count < 10 else 50
         base_scale = 30 if word_count < 10 else 45
@@ -203,39 +189,21 @@ class OpenAIService:
         demand_val = min(base_demand + (h % 35) + (15 if has_market else 0), 100)
         scale_val = min(base_scale + (h % 40) + (10 if has_tech else 0), 100)
 
-        # Quality-aware risk level
-        if word_count < 10:
-            risk = 'High'
-        elif word_count < 30:
-            risk = 'Medium'
-        else:
-            risk = ['Low', 'Medium', 'Medium'][h % 3]
+        risk = 'High' if word_count < 10 else ('Medium' if word_count < 30 else ['Low', 'Medium', 'Medium'][h % 3])
+        clarity = 'Low' if word_count < 8 else ('Medium' if word_count < 30 else 'High')
 
-        # Idea clarity
-        if word_count < 8:
-            clarity = 'Low'
-        elif word_count < 30:
-            clarity = 'Medium'
-        else:
-            clarity = 'High'
+        refined = (
+            f"{idea_text.strip().rstrip('.')}. "
+            f"This concept could be developed as a platform that solves specific pain points "
+            f"for targeted users, leveraging technology for automation and scale. "
+            f"Consider defining the target audience, key differentiators, and revenue model."
+        ) if word_count < 15 else idea_text
 
-        # Generate refined idea for vague inputs
-        if word_count < 15:
-            refined = (
-                f"{idea_text.strip().rstrip('.')}. "
-                f"This concept could be developed as a platform that solves specific pain points "
-                f"for targeted users, leveraging technology for automation and scale. "
-                f"Consider defining the target audience, key differentiators, and revenue model."
-            )
-        else:
-            refined = idea_text
-
-        # Context-aware summaries
         if word_count < 10:
             summary = (
-                f"This is an early-stage concept that needs further development. "
-                f"While the core idea has potential, adding detail about target users, "
-                f"unique approach, and market opportunity would enable a much stronger analysis."
+                "This is an early-stage concept that needs further development. "
+                "While the core idea has potential, adding detail about target users, "
+                "unique approach, and market opportunity would enable a much stronger analysis."
             )
             comp_adv = "To be determined — the concept needs more definition to identify unique advantages."
             target = "Not yet specified — defining a clear target audience is a critical next step."

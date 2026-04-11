@@ -1,13 +1,13 @@
 from backend.utils.keyword_extractor import extract_keywords
 from backend.utils.dsa_ranker import rank_keywords
-from backend.services.openai_service import OpenAIService
+from backend.services.gemini_service import GeminiService
 from backend.services.scoring_service import score_idea
 from backend.services.language_service import LanguageService
 from backend.Database.db import db
 from backend.models.idea_model import Idea
 from backend.models.report_model import Report
 
-openai_svc = OpenAIService()
+ai_svc = GeminiService()
 language = LanguageService()
 
 
@@ -39,8 +39,8 @@ def analyze_idea(idea_text=None, category=None, audio_bytes=None, audio_filename
     ranked = rank_keywords(keywords)
 
     # AI expansion & structured analysis
-    expanded = openai_svc.generate_expansion(idea_text)
-    detailed = openai_svc.generate_detailed_analysis(idea_text)
+    expanded = ai_svc.generate_expansion(idea_text)
+    detailed = ai_svc.generate_detailed_analysis(idea_text)
 
     score_data = score_idea(idea_text, keywords, category=category)
     score = score_data['score']
@@ -48,7 +48,7 @@ def analyze_idea(idea_text=None, category=None, audio_bytes=None, audio_filename
     related = _find_related_ideas(keywords)
 
     # Generate executive summary
-    summary = openai_svc.generate_summary(
+    summary = ai_svc.generate_summary(
         idea_text, score,
         score_data.get('idea_quality', 'Basic'),
         score_data.get('detected_sector', category or 'General'),
