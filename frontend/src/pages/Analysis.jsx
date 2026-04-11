@@ -107,8 +107,8 @@ function Analysis() {
             <svg viewBox="0 0 160 160">
               <defs>
                 <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#7c3aed" />
-                  <stop offset="100%" stopColor="#3b82f6" />
+                  <stop offset="0%" stopColor={score >= 6 ? '#10b981' : score >= 4 ? '#f59e0b' : '#f43f5e'} />
+                  <stop offset="100%" stopColor={score >= 6 ? '#06b6d4' : score >= 4 ? '#fb923c' : '#dc2626'} />
                 </linearGradient>
               </defs>
               <circle cx="80" cy="80" r="70" className="ring-bg" />
@@ -148,9 +148,9 @@ function Analysis() {
             <div className="analysis-section">
               <h3>AI Metrics</h3>
               {[
-                { label: 'Innovation', value: detailed.innovation, color: '#7c3aed' },
-                { label: 'Market Demand', value: detailed.market_demand, color: '#3b82f6' },
-                { label: 'Scalability', value: detailed.scalability, color: '#06d6a0' },
+                { label: 'Innovation', value: detailed.innovation, color: detailed.innovation >= 60 ? '#10b981' : detailed.innovation >= 40 ? '#f59e0b' : '#f43f5e' },
+                { label: 'Market Demand', value: detailed.market_demand, color: detailed.market_demand >= 60 ? '#06b6d4' : detailed.market_demand >= 40 ? '#fb923c' : '#dc2626' },
+                { label: 'Scalability', value: detailed.scalability, color: detailed.scalability >= 60 ? '#34d399' : detailed.scalability >= 40 ? '#fbbf24' : '#f87171' },
               ].map((m, i) => (
                 <div className="metric-bar" key={i}>
                   <div className="metric-bar-header">
@@ -240,10 +240,10 @@ function Analysis() {
                       transition={{ delay: 0.5 + i * 0.08, duration: 0.8 }}
                       style={{
                         background: pct >= 70
-                          ? 'linear-gradient(90deg, #06d6a0, #3b82f6)'
+                          ? 'linear-gradient(90deg, #10b981, #06b6d4)'
                           : pct >= 40
-                          ? 'linear-gradient(90deg, #f59e0b, #3b82f6)'
-                          : 'linear-gradient(90deg, #ef4444, #f59e0b)',
+                          ? 'linear-gradient(90deg, #f59e0b, #fb923c)'
+                          : 'linear-gradient(90deg, #f43f5e, #dc2626)',
                       }}
                     />
                   </div>

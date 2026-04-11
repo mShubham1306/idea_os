@@ -2,8 +2,8 @@
   width: 260px;
   min-width: 260px;
   min-height: 100vh;
-  background: linear-gradient(180deg, #0f0f2a 0%, #0a0a1a 100%);
-  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(180deg, #061a0e 0%, #030f0a 100%);
+  border-right: 1px solid rgba(16, 185, 129, 0.12);
   padding: 1.5rem 1rem;
   display: flex;
   flex-direction: column;
@@ -31,7 +31,7 @@
   align-items: center;
   justify-content: center;
   font-size: 1.1rem;
-  box-shadow: 0 0 20px rgba(124, 58, 237, 0.3);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.35);
 }
 
 .sidebar-brand-name {
@@ -78,12 +78,12 @@
 
 .sidebar-nav a:hover {
   color: var(--text);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(16, 185, 129, 0.06);
 }
 
 .sidebar-nav a.active {
   color: var(--text);
-  background: rgba(124, 58, 237, 0.15);
+  background: rgba(16, 185, 129, 0.15);
 }
 
 .sidebar-nav a.active::before {
