@@ -1,8 +1,8 @@
-$script:PYTHONPATH = "c:\Users\nayan\Desktop\project-1"
+$script:PYTHONPATH = $PSScriptRoot
 $env:PYTHONPATH = $PYTHONPATH
-cd "c:\Users\nayan\Desktop\project-1"
-& "c:\Users\nayan\Desktop\project-1\backend\venv\Scripts\python.exe" -c "
-import sys; sys.path.insert(0, 'c:\\Users\\nayan\\Desktop\\project-1')
+cd $PSScriptRoot
+& "$PSScriptRoot\backend\venv\Scripts\python.exe" -c "
+import sys; sys.path.insert(0, '$PSScriptRoot')
 from backend.app import create_app
 app = create_app()
 print('Starting Flask server on http://0.0.0.0:5000')
