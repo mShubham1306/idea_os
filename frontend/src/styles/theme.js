@@ -1,14 +1,14 @@
 export const colors = {
-  background: "#120306",
-  card: "#220810",
-  primary: "#e11d48",
-  secondary: "#f97316",
-  accent: "#f43f5e",
-  danger: "#ef4444",
-  text: "#fff1f2",
-  muted: "#fda4af",
+  background: "#020617",
+  card: "#111827",
+  primary: "#3B82F6",
+  secondary: "#06B6D4",
+  accent: "#06B6D4",
+  danger: "#F43F5E",
+  text: "#F8FAFC",
+  muted: "#94A3B8",
 };
 
 export const gradients = {
-  main: "linear-gradient(135deg, #e11d48, #f97316)",
+  main: "linear-gradient(135deg, #3B82F6, #2563EB)",
 };

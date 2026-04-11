@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 /* ─── Quality badge color map ────────────────────────────── */
 const qualityConfig = {
   Vague:    { color: '#ef4444', bg: 'rgba(239,68,68,0.15)', label: '⚡ Vague Idea' },
-  Basic:    { color: '#f43f5e', bg: 'rgba(245,158,11,0.15)', label: '📝 Basic Concept' },
+  Basic:    { color: '#F59E0B', bg: 'rgba(245,158,11,0.15)', label: '📝 Basic Concept' },
   Good:     { color: '#3b82f6', bg: 'rgba(59,130,246,0.15)', label: '✅ Good Detail' },
   Detailed: { color: '#06d6a0', bg: 'rgba(6,214,160,0.15)', label: '🌟 Detailed' },
 };
@@ -107,8 +107,8 @@ function Analysis() {
             <svg viewBox="0 0 160 160">
               <defs>
                 <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor={score >= 6 ? '#e11d48' : score >= 4 ? '#f43f5e' : '#f43f5e'} />
-                  <stop offset="100%" stopColor={score >= 6 ? '#f97316' : score >= 4 ? '#fdba74' : '#dc2626'} />
+                  <stop offset="0%" stopColor={score >= 6 ? '#3B82F6' : score >= 4 ? '#F59E0B' : '#F59E0B'} />
+                  <stop offset="100%" stopColor={score >= 6 ? '#06B6D4' : score >= 4 ? '#fdba74' : '#dc2626'} />
                 </linearGradient>
               </defs>
               <circle cx="80" cy="80" r="70" className="ring-bg" />
@@ -148,8 +148,8 @@ function Analysis() {
             <div className="analysis-section">
               <h3>AI Metrics</h3>
               {[
-                { label: 'Innovation', value: detailed.innovation, color: detailed.innovation >= 60 ? '#e11d48' : detailed.innovation >= 40 ? '#f43f5e' : '#f43f5e' },
-                { label: 'Market Demand', value: detailed.market_demand, color: detailed.market_demand >= 60 ? '#f97316' : detailed.market_demand >= 40 ? '#fdba74' : '#dc2626' },
+                { label: 'Innovation', value: detailed.innovation, color: detailed.innovation >= 60 ? '#3B82F6' : detailed.innovation >= 40 ? '#F59E0B' : '#F59E0B' },
+                { label: 'Market Demand', value: detailed.market_demand, color: detailed.market_demand >= 60 ? '#06B6D4' : detailed.market_demand >= 40 ? '#fdba74' : '#dc2626' },
                 { label: 'Scalability', value: detailed.scalability, color: detailed.scalability >= 60 ? '#34d399' : detailed.scalability >= 40 ? '#fbbf24' : '#f87171' },
               ].map((m, i) => (
                 <div className="metric-bar" key={i}>
@@ -240,10 +240,10 @@ function Analysis() {
                       transition={{ delay: 0.5 + i * 0.08, duration: 0.8 }}
                       style={{
                         background: pct >= 70
-                          ? 'linear-gradient(90deg, #e11d48, #f97316)'
+                          ? 'linear-gradient(90deg, #3B82F6, #06B6D4)'
                           : pct >= 40
-                          ? 'linear-gradient(90deg, #f43f5e, #fdba74)'
-                          : 'linear-gradient(90deg, #f43f5e, #dc2626)',
+                          ? 'linear-gradient(90deg, #F59E0B, #fdba74)'
+                          : 'linear-gradient(90deg, #F59E0B, #dc2626)',
                       }}
                     />
                   </div>

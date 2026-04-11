@@ -4,47 +4,47 @@
 
 /* ── Design Tokens ─────────────────────────────────────────────── */
 :root {
-  /* Colors — Rose / Orange palette */
-  --bg-primary: #120306;
-  --bg-secondary: #1a050a;
-  --bg-card: rgba(225, 29, 72, 0.04);
-  --bg-card-hover: rgba(225, 29, 72, 0.09);
-  --bg-card-solid: #220810;
+  /* Colors — Modern AI Theme */
+  --bg-primary: #020617;
+  --bg-secondary: #0F172A;
+  --bg-card: rgba(17, 24, 39, 0.8);
+  --bg-card-hover: rgba(17, 24, 39, 0.95);
+  --bg-card-solid: #111827;
 
-  --primary: #e11d48;
-  --primary-light: #fb7185;
-  --primary-dark: #be123c;
-  --secondary: #f97316;
-  --secondary-light: #fdba74;
-  --accent: #f43f5e;
-  --accent-light: #fb7185;
-  --danger: #ef4444;
-  --warning: #f43f5e;
-  --info: #0ea5e9;
+  --primary: #3B82F6;
+  --primary-light: #60A5FA;
+  --primary-dark: #2563EB;
+  --secondary: #06B6D4;
+  --secondary-light: #22D3EE;
+  --accent: #06B6D4;
+  --accent-light: #67E8F9;
+  --danger: #F43F5E;
+  --warning: #F59E0B;
+  --info: #06B6D4;
 
-  --text: #fff1f2;
-  --text-secondary: #fecdd3;
-  --text-muted: #fda4af;
-  --border: rgba(225, 29, 72, 0.12);
-  --border-light: rgba(225, 29, 72, 0.22);
+  --text: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --border: #1F2937;
+  --border-light: rgba(31, 41, 55, 0.5);
 
   /* Gradients */
-  --gradient-primary: linear-gradient(135deg, #e11d48 0%, #f97316 100%);
-  --gradient-accent: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
-  --gradient-warm: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
-  --gradient-purple: linear-gradient(135deg, #e11d48 0%, #f43f5e 100%);
-  --gradient-bg: linear-gradient(180deg, #120306 0%, #1a050a 50%, #120306 100%);
+  --gradient-primary: linear-gradient(135deg, #3B82F6, #2563EB);
+  --gradient-accent: linear-gradient(135deg, #06B6D4, #3B82F6);
+  --gradient-warm: linear-gradient(135deg, #10B981, #06B6D4);
+  --gradient-purple: linear-gradient(135deg, #3B82F6, #06B6D4);
+  --gradient-bg: linear-gradient(180deg, #020617 0%, #0F172A 50%, #020617 100%);
 
   /* Glassmorphism */
-  --glass-bg: rgba(225, 29, 72, 0.05);
-  --glass-border: rgba(225, 29, 72, 0.15);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --glass-bg: rgba(17, 24, 39, 0.7);
+  --glass-border: #1F2937;
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
 
   /* Radius */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
-  --radius-xl: 24px;
+  --radius-xl: 20px;
   --radius-full: 9999px;
 
   /* Transitions */
@@ -54,11 +54,11 @@
   --transition-slow: 0.5s var(--ease-out);
 
   /* Shadows */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-  --shadow-glow-primary: 0 0 30px rgba(225, 29, 72, 0.35);
-  --shadow-glow-accent: 0 0 30px rgba(244, 63, 94, 0.35);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-glow-primary: 0 0 15px rgba(59, 130, 246, 0.4);
+  --shadow-glow-accent: 0 0 10px #06B6D4;
 }
 
 /* ── Reset ─────────────────────────────────────────────────────── */
@@ -173,7 +173,7 @@ h4 { font-size: 1rem; font-weight: 600; line-height: 1.5; }
 }
 
 .btn-primary:hover {
-  box-shadow: 0 0 40px rgba(225, 29, 72, 0.5);
+  box-shadow: 0 0 40px rgba(59, 130, 246, 0.5);
   transform: translateY(-2px);
 }
 
@@ -213,7 +213,7 @@ h4 { font-size: 1rem; font-weight: 600; line-height: 1.5; }
 
 .input:focus, .textarea:focus, .select:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.2);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
   background: rgba(255, 255, 255, 0.08);
 }
 
@@ -404,8 +404,8 @@ h4 { font-size: 1rem; font-weight: 600; line-height: 1.5; }
 .keyword-pill {
   padding: 0.35rem 0.85rem;
   border-radius: var(--radius-full);
-  background: rgba(225, 29, 72, 0.15);
-  border: 1px solid rgba(225, 29, 72, 0.3);
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
   color: var(--primary-light);
   font-size: 0.8rem;
   font-weight: 500;
@@ -413,7 +413,7 @@ h4 { font-size: 1rem; font-weight: 600; line-height: 1.5; }
 }
 
 .keyword-pill:hover {
-  background: rgba(225, 29, 72, 0.25);
+  background: rgba(59, 130, 246, 0.25);
   transform: scale(1.05);
 }
 
@@ -433,7 +433,7 @@ h4 { font-size: 1rem; font-weight: 600; line-height: 1.5; }
 }
 
 .score-badge.medium {
-  background: rgba(244, 63, 94, 0.15);
+  background: rgba(6, 182, 212, 0.15);
   color: var(--warning);
 }
 
@@ -564,7 +564,7 @@ h4 { font-size: 1rem; font-weight: 600; line-height: 1.5; }
 .orb-1 {
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(225, 29, 72, 0.5), transparent);
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.5), transparent);
   top: -100px;
   right: -100px;
   animation: floatOrb1 15s ease-in-out infinite;
@@ -573,7 +573,7 @@ h4 { font-size: 1rem; font-weight: 600; line-height: 1.5; }
 .orb-2 {
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, rgba(249, 115, 22, 0.45), transparent);
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.45), transparent);
   bottom: -80px;
   left: -80px;
   animation: floatOrb2 18s ease-in-out infinite;
@@ -582,7 +582,7 @@ h4 { font-size: 1rem; font-weight: 600; line-height: 1.5; }
 .orb-3 {
   width: 300px;
   height: 300px;
-  background: radial-gradient(circle, rgba(244, 63, 94, 0.3), transparent);
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.3), transparent);
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -713,8 +713,8 @@ h4 { font-size: 1rem; font-weight: 600; line-height: 1.5; }
   gap: 0.5rem;
   padding: 0.5rem 1.25rem;
   border-radius: var(--radius-full);
-  background: rgba(225, 29, 72, 0.12);
-  border: 1px solid rgba(225, 29, 72, 0.25);
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.25);
   color: var(--primary-light);
   font-size: 0.82rem;
   font-weight: 500;
@@ -757,7 +757,7 @@ h4 { font-size: 1rem; font-weight: 600; line-height: 1.5; }
 }
 
 .btn-hero-primary:hover {
-  box-shadow: 0 0 50px rgba(225, 29, 72, 0.6);
+  box-shadow: 0 0 50px rgba(59, 130, 246, 0.6);
   transform: translateY(-3px);
 }
 
@@ -854,7 +854,7 @@ h4 { font-size: 1rem; font-weight: 600; line-height: 1.5; }
 }
 
 .dot.red { background: #ef4444; }
-.dot.yellow { background: #f43f5e; }
+.dot.yellow { background: #F59E0B; }
 .dot.green { background: #06d6a0; }
 
 .preview-title {
@@ -877,7 +877,7 @@ h4 { font-size: 1rem; font-weight: 600; line-height: 1.5; }
 .preview-ring {
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 0 15px rgba(225, 29, 72, 0.3));
+  filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.3));
 }
 
 .preview-score-value {
@@ -930,8 +930,8 @@ h4 { font-size: 1rem; font-weight: 600; line-height: 1.5; }
 .preview-tag {
   padding: 0.2rem 0.6rem;
   border-radius: var(--radius-full);
-  background: rgba(225, 29, 72, 0.12);
-  border: 1px solid rgba(225, 29, 72, 0.25);
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.25);
   color: var(--primary-light);
   font-size: 0.7rem;
   font-weight: 500;
@@ -1019,8 +1019,8 @@ h4 { font-size: 1rem; font-weight: 600; line-height: 1.5; }
   gap: 0.4rem;
   padding: 0.4rem 1rem;
   border-radius: var(--radius-full);
-  background: rgba(225, 29, 72, 0.1);
-  border: 1px solid rgba(225, 29, 72, 0.2);
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
   color: var(--primary-light);
   font-size: 0.8rem;
   font-weight: 600;
@@ -1397,7 +1397,7 @@ h4 { font-size: 1rem; font-weight: 600; line-height: 1.5; }
 }
 
 .testimonial-stars {
-  color: #f43f5e;
+  color: #F59E0B;
   font-size: 1rem;
   margin-bottom: 1rem;
   letter-spacing: 2px;
@@ -1897,7 +1897,7 @@ h4 { font-size: 1rem; font-weight: 600; line-height: 1.5; }
   color: var(--text-secondary);
   line-height: 1.5;
   padding: 0.5rem 0.65rem;
-  background: rgba(225, 29, 72, 0.06);
+  background: rgba(59, 130, 246, 0.06);
   border-radius: var(--radius-sm);
   border-left: 2px solid var(--primary-light);
   margin: 0;
@@ -1907,8 +1907,8 @@ h4 { font-size: 1rem; font-weight: 600; line-height: 1.5; }
 .improvement-tips-card {
   padding: 2rem;
   margin-bottom: 2rem;
-  border: 1px solid rgba(244, 63, 94, 0.2);
-  background: linear-gradient(135deg, rgba(244, 63, 94, 0.04), rgba(239, 68, 68, 0.02));
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.04), rgba(239, 68, 68, 0.02));
 }
 
 .tips-list {
@@ -1920,7 +1920,7 @@ h4 { font-size: 1rem; font-weight: 600; line-height: 1.5; }
 .tip-item {
   padding: 0.85rem 1rem;
   background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(244, 63, 94, 0.12);
+  border: 1px solid rgba(6, 182, 212, 0.12);
   border-radius: var(--radius-sm);
   font-size: 0.88rem;
   color: var(--text-secondary);
