@@ -5,6 +5,8 @@ import { analyzeIdea } from '../services/api';
 import AnimatedButton from '../components/AnimatedButton';
 import Loader from '../components/Loader';
 
+import { useActiveIdea } from '../context/IdeaContext';
+
 const CATEGORIES = [
   'FinTech', 'HealthTech', 'EdTech', 'SaaS', 'AI/ML',
   'E-Commerce', 'GreenTech', 'FoodTech', 'PropTech',
@@ -17,6 +19,7 @@ export default function SubmitIdea() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { setActiveIdea } = useActiveIdea();
 
   const handleSubmit = async () => {
     if (!idea.trim()) {
@@ -27,6 +30,7 @@ export default function SubmitIdea() {
     setLoading(true);
     try {
       const res = await analyzeIdea(idea, category || undefined);
+      setActiveIdea(res.data);
       navigate('/analysis', { state: res.data });
     } catch (err) {
       setError('Analysis failed. Please try again.');
