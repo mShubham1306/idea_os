@@ -1,21 +1,22 @@
 from flask import Blueprint, request, jsonify
-from backend.controllers.idea_controller import analyze_idea, get_history
+from backend.controllers.idea_controller import (
+    analyze_idea,
+    get_history,
+    chat_with_copilot,
+    record_idea_feedback
+)
 
 idea_bp = Blueprint('idea', __name__)
 
 
 @idea_bp.route('/analyze', methods=['POST'])
 def analyze():
-    # support JSON or multipart form-data with file (field 'audio')
-    # if an audio file is included, it is passed to the controller for
-    # transcription before analysis
     idea_text = None
     category = None
     audio_bytes = None
     audio_filename = None
 
     if request.content_type and request.content_type.startswith('multipart/form-data'):
-        # file upload
         file = request.files.get('audio')
         if file:
             audio_bytes = file.read()
@@ -28,6 +29,20 @@ def analyze():
         category = payload.get('category')
 
     result = analyze_idea(idea_text, category, audio_bytes=audio_bytes, audio_filename=audio_filename)
+    return jsonify(result)
+
+
+@idea_bp.route('/chat', methods=['POST'])
+def chat():
+    payload = request.get_json() or {}
+    result = chat_with_copilot(payload)
+    return jsonify(result)
+
+
+@idea_bp.route('/train-feedback', methods=['POST'])
+def train_feedback():
+    payload = request.get_json() or {}
+    result = record_idea_feedback(payload)
     return jsonify(result)
 
 

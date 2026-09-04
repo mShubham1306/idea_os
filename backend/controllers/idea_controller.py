@@ -3,12 +3,14 @@ from backend.utils.dsa_ranker import rank_keywords
 from backend.services.gemini_service import GeminiService
 from backend.services.scoring_service import score_idea
 from backend.services.language_service import LanguageService
+from backend.services.ml_prediction_service import MLPredictionService
 from backend.Database.db import db
 from backend.models.idea_model import Idea
 from backend.models.report_model import Report
 
 ai_svc = GeminiService()
 language = LanguageService()
+ml_svc = MLPredictionService()
 
 
 def _find_related_ideas(keywords, limit=3):
@@ -46,6 +48,14 @@ def analyze_idea(idea_text=None, category=None, audio_bytes=None, audio_filename
     score = score_data['score']
     sentiment = language.analyze_sentiment(idea_text)
     related = _find_related_ideas(keywords)
+
+    # Machine Learning Prediction (Trained on 66,368 startups)
+    ml_prediction = ml_svc.predict_idea(idea_text, category=category, keywords=keywords)
+
+    # Gemini Post-Evaluation Audit & Accuracy Verification
+    gemini_audit = ai_svc.audit_and_verify_analysis(
+        idea_text, ml_prediction, score_data, detailed
+    )
 
     # Generate executive summary
     summary = ai_svc.generate_summary(
@@ -109,7 +119,27 @@ def analyze_idea(idea_text=None, category=None, audio_bytes=None, audio_filename
         'related_sectors': score_data.get('related_sectors', []),
         'sector_intel': sector_detail,
         'execution_plan': expanded,
+        'ml_prediction': ml_prediction,
+        'gemini_audit': gemini_audit,
     }
+
+
+def chat_with_copilot(data):
+    """Handle conversational queries about a specific idea."""
+    idea_context = data.get('context') or {}
+    message_history = data.get('history') or []
+    user_message = data.get('message') or ''
+    if not user_message:
+        return {'error': 'Message cannot be empty'}
+    return ai_svc.chat_about_idea(idea_context, message_history, user_message)
+
+
+def record_idea_feedback(data):
+    """Record actual startup outcome for incremental ML dataset training."""
+    idea_text = data.get('idea') or data.get('idea_text', '')
+    category = data.get('category', 'general')
+    status = data.get('status', 'operating')
+    return ml_svc.ingest_user_feedback(idea_text, category, status)
 
 
 def get_history():

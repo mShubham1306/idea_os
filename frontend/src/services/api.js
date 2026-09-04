@@ -19,4 +19,12 @@ export const getDashboardInsights = () => {
   return API.get('/api/dashboard/insights');
 };
 
+export const chatAboutIdea = (context, history, message) => {
+  return API.post('/api/idea/chat', { context, history, message });
+};
+
+export const submitIdeaFeedback = (idea, category, status) => {
+  return API.post('/api/idea/train-feedback', { idea, category, status });
+};
+
 export default API;

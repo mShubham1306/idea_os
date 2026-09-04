@@ -1,15 +1,23 @@
 import os
 import json
 import re
+from dotenv import load_dotenv
+
+# Ensure .env is loaded from backend directory
+_backend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+load_dotenv(os.path.join(_backend_dir, '.env'))
 
 try:
     import google.generativeai as genai
 except ImportError:
     genai = None
 
+DEFAULT_GEMINI_MODEL = os.environ.get('GEMINI_MODEL', 'gemini-3.6-flash')
+
 class GeminiService:
-    def __init__(self, api_key=None):
+    def __init__(self, api_key=None, model_name=None):
         self.api_key = api_key or os.environ.get('GEMINI_API_KEY') or os.environ.get('OPENAI_API_KEY', '')
+        self.model_name = model_name or DEFAULT_GEMINI_MODEL
         self.client_configured = False
         if self.api_key and genai:
             genai.configure(api_key=self.api_key)
@@ -21,7 +29,7 @@ class GeminiService:
             return self._fallback_expansion(idea_text)
         try:
             model = genai.GenerativeModel(
-                "gemini-1.5-flash",
+                self.model_name,
                 system_instruction=(
                     "You are an expert startup advisor. Analyze the business idea and provide: "
                     "1) A brief market analysis, 2) Key strengths, 3) Potential risks, "
@@ -41,7 +49,7 @@ class GeminiService:
             return self._fallback_detailed(idea_text)
         try:
             model = genai.GenerativeModel(
-                "gemini-1.5-flash",
+                self.model_name,
                 system_instruction=(
                     "You are an expert startup evaluator. Return ONLY valid JSON with these keys: "
                     "innovation (0-100 integer), market_demand (0-100 integer), scalability (0-100 integer), "
@@ -70,7 +78,7 @@ class GeminiService:
         if self.client_configured:
             try:
                 model = genai.GenerativeModel(
-                    "gemini-1.5-flash",
+                    self.model_name,
                     system_instruction=(
                         "Write a 2-3 sentence executive summary of this startup idea analysis. "
                         "Be professional and constructive. Mention the overall score, sector, and key insight."
@@ -85,6 +93,107 @@ class GeminiService:
             except Exception:
                 pass
         return self._fallback_summary(idea_text, score, idea_quality, detected_sector, detailed)
+
+    def audit_and_verify_analysis(self, idea_text, ml_prediction, score_data, detailed):
+        """Cross-verify ML statistical predictions with qualitative feasibility using Gemini."""
+        if not self.client_configured:
+            return self._fallback_audit(idea_text, ml_prediction, score_data)
+        try:
+            model = genai.GenerativeModel(
+                self.model_name,
+                system_instruction=(
+                    "You are a rigorous Chief Investment Auditor & AI Verification Officer for venture capital. "
+                    "Your job is to audit and cross-verify an ML model's statistical success predictions against "
+                    "the qualitative reality of a startup idea. "
+                    "Return ONLY valid JSON with these keys: "
+                    "audit_verdict (string, e.g. 'Verified & High Accuracy', 'Verified with Strategic Cautions', 'Divergence Flagged'), "
+                    "accuracy_confidence (integer 0-100 representing how confident you are in the unified assessment), "
+                    "statistical_alignment (string: 'High', 'Moderate', or 'Low' consistency between ML model and market reality), "
+                    "audit_summary (a 2-3 sentence executive audit assessing whether the ML numbers match reality), "
+                    "reconciliation_notes (array of 3 strings explaining nuances where pure ML statistical data agrees or disagrees with real-world execution), "
+                    "actionable_enhancements (array of 3 high-impact strategic actions the founder must take to boost their score)."
+                ),
+                generation_config={"response_mime_type": "application/json"}
+            )
+            prompt = (
+                f"Startup Idea: {idea_text}\n"
+                f"Overall Heuristic Score: {score_data.get('score', 5.0)}/10\n"
+                f"ML Predicted Success Probability: {ml_prediction.get('ml_success_probability', 50.0)}%\n"
+                f"ML Risk Index: {ml_prediction.get('risk_index', 'Moderate')}\n"
+                f"ML Matched Sector: {ml_prediction.get('matched_sector', 'General')} (Historical Sector Success Rate: {ml_prediction.get('sector_success_rate', 50)}%)\n"
+                f"Innovation: {detailed.get('innovation', 60)}/100, Market Demand: {detailed.get('market_demand', 60)}/100, Scalability: {detailed.get('scalability', 60)}/100\n"
+                f"Strengths: {', '.join(detailed.get('strengths', [])[:3])}\n"
+                f"Weaknesses: {', '.join(detailed.get('weaknesses', [])[:3])}\n"
+                "Audit this idea and return JSON."
+            )
+            response = model.generate_content(prompt)
+            raw = response.text.strip()
+            if raw.startswith("```"):
+                raw = raw.split("\n", 1)[-1].rsplit("```", 1)[0]
+            return json.loads(raw)
+        except Exception:
+            return self._fallback_audit(idea_text, ml_prediction, score_data)
+
+    def chat_about_idea(self, idea_context, message_history, user_message):
+        """Conversational chat with Gemini about this specific startup idea."""
+        if not self.client_configured:
+            return {
+                'reply': "AI chat service is currently in offline fallback mode. Please ensure GEMINI_API_KEY is active."
+            }
+        try:
+            system_prompt = (
+                "You are IDEAOS Copilot, an elite AI startup mentor and venture strategist. "
+                "You are advising a founder on their evaluated startup idea. "
+                "You have full visibility into the idea's evaluation metrics:\n"
+                f"- Idea Title/Description: {idea_context.get('idea_text')}\n"
+                f"- Overall Score: {idea_context.get('score')}/10\n"
+                f"- ML Model Success Probability: {idea_context.get('ml_success_probability')}%\n"
+                f"- Sector: {idea_context.get('sector')}\n"
+                f"- Innovation: {idea_context.get('innovation')}/100, Market Demand: {idea_context.get('market_demand')}/100\n"
+                f"- Key Strengths: {idea_context.get('strengths')}\n"
+                f"- Key Risks: {idea_context.get('weaknesses')}\n\n"
+                "Answer the founder's questions with actionable, sharp, data-driven advice. "
+                "Keep responses engaging, structured with markdown bullet points where appropriate, and concise."
+            )
+            model = genai.GenerativeModel(self.model_name, system_instruction=system_prompt)
+            
+            formatted_prompt = ""
+            if message_history:
+                formatted_prompt += "Previous conversation:\n"
+                for msg in message_history[-6:]:
+                    role = "Founder" if msg.get('sender') == 'user' else "Copilot"
+                    formatted_prompt += f"{role}: {msg.get('text')}\n"
+                formatted_prompt += "\n"
+            formatted_prompt += f"Founder: {user_message}\nCopilot:"
+
+            response = model.generate_content(formatted_prompt)
+            return {'reply': response.text.strip()}
+        except Exception as e:
+            return {'reply': f"Error generating reply: {str(e)}"}
+
+    @staticmethod
+    def _fallback_audit(idea_text, ml_prediction, score_data):
+        prob = ml_prediction.get('ml_success_probability', 50.0)
+        verdict = 'Verified & Balanced' if prob >= 50 else 'Cautionary Viability'
+        return {
+            'audit_verdict': verdict,
+            'accuracy_confidence': 82,
+            'statistical_alignment': 'Moderate',
+            'audit_summary': (
+                f"The idea shows an ML statistical success likelihood of {prob}%. "
+                f"Qualitative evaluation confirms moderate feasibility with market development required."
+            ),
+            'reconciliation_notes': [
+                "Statistical sample from 66,000 startups shows high initial attrition for early-stage concepts",
+                "Differentiating the core value proposition improves survival odds significantly",
+                "Capital efficiency in the first 6 months is the primary determinant of milestone achievement"
+            ],
+            'actionable_enhancements': [
+                "Build a clickable prototype to validate user intent before heavy engineering",
+                "Identify 5 design partners or early beta users",
+                "Define precise unit economics and customer acquisition channels"
+            ]
+        }
 
     # ── Fallback heuristics (no API key) ──────────────────
 

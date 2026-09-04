@@ -1,6 +1,8 @@
 import React from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import PowerBIAnalytics from '../components/PowerBIAnalytics';
+import IdeaAIChatDrawer from '../components/IdeaAIChatDrawer';
 
 /* ─── Quality badge color map ────────────────────────────── */
 const qualityConfig = {
@@ -30,6 +32,8 @@ function Analysis() {
   const scoreComponents = data.score_components || {};
   const detectedSector = data.detected_sector || 'General';
   const refinedIdea = detailed.refined_idea || '';
+  const mlPrediction = data.ml_prediction || {};
+  const geminiAudit = data.gemini_audit || {};
 
   // Score circle params
   const circumference = 2 * Math.PI * 70;
@@ -411,11 +415,34 @@ function Analysis() {
         </motion.div>
       )}
 
+      {/* ═══ PowerBI Analytics Hub (ML + Gemini Verification) ═══ */}
+      <PowerBIAnalytics
+        mlPrediction={mlPrediction}
+        geminiAudit={geminiAudit}
+        detailed={detailed}
+        scoreData={data}
+        sector={detectedSector}
+      />
+
       {/* ═══ Actions ════════════════════════════════════════════ */}
       <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
         <Link to="/submit" className="btn btn-primary">Analyze Another Idea</Link>
         <Link to="/history" className="btn btn-secondary">View History</Link>
       </div>
+
+      {/* ── AI Copilot Chat Drawer ── */}
+      <IdeaAIChatDrawer
+        ideaContext={{
+          idea_text: idea.description,
+          score,
+          ml_success_probability: mlPrediction.ml_success_probability,
+          sector: detectedSector,
+          innovation: detailed.innovation,
+          market_demand: detailed.market_demand,
+          strengths: detailed.strengths,
+          weaknesses: detailed.weaknesses,
+        }}
+      />
     </motion.div>
   );
 }
